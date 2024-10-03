@@ -12,7 +12,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<UserSearch />} />
-        <Route path="/user/:username" element={<UserRepos />} />
+        {/* <Route path="/user/:username" element={<UserRepos />} /> */}
         <Route path="/user/:username/repo/:reponame" element={<RepoIssues />} />
       </Routes>
     </Router>
