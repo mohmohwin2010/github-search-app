@@ -1,9 +1,9 @@
+// src/components/RepoIssues.tsx
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
 import IssueList from './IssueList';
 import NewIssueModal from './NewIssueModal';
-
 
 const GET_REPO_ISSUES = gql`
   query GetRepoIssues($owner: String!, $repo: String!) {
@@ -25,7 +25,7 @@ const GET_REPO_ISSUES = gql`
   }
 `;
 
-const RepoIssues: React.FC = () => {
+const RepoIssuesSimple: React.FC = () => {
   const { username, reponame } = useParams<{ username?: string; reponame?: string }>();
   const { loading, error, data, refetch } = useQuery(GET_REPO_ISSUES, {
     variables: { owner: username!, repo: reponame! },
@@ -42,14 +42,9 @@ const RepoIssues: React.FC = () => {
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <div className="container mt-4">
+    <div>
       <h2>Open Issues for {reponame}</h2>
-      <button 
-        className="btn btn-primary mb-3" 
-        onClick={() => setIsModalOpen(true)}
-      >
-        Create New Issue
-      </button>
+      <button onClick={() => setIsModalOpen(true)}>Create New Issue</button>
       <IssueList issues={data.repository.issues.edges} />
       <NewIssueModal
         isOpen={isModalOpen}
@@ -65,4 +60,4 @@ const RepoIssues: React.FC = () => {
   );
 };
 
-export default RepoIssues;
+export default RepoIssuesSimple;

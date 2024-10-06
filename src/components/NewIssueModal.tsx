@@ -1,6 +1,7 @@
-// src/components/NewIssueModal.tsx
 import React, { useState } from 'react';
-import Modal from 'react-modal';
+// import Modal from 'react-modal';
+import Modal from 'react-bootstrap/Modal';
+import 'bootstrap/dist/css/bootstrap.css';
 import { useQuery, useMutation, gql } from '@apollo/client';
 
 const GET_REPO_ID = gql`
@@ -41,13 +42,11 @@ const NewIssueModal: React.FC<NewIssueModalProps> = ({
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
 
-  // Use the `useQuery` hook to fetch the repository ID
   const { data, loading, error } = useQuery(GET_REPO_ID, {
     variables: { owner, repo },
-    skip: !isOpen, // Only run query if the modal is open
+    skip: !isOpen,
   });
 
-  // Use the `useMutation` hook to create a new issue
   const [createIssue, { loading: mutationLoading, error: mutationError }] = useMutation(CREATE_ISSUE, {
     onCompleted: () => {
       onIssueCreated();
@@ -70,29 +69,47 @@ const NewIssueModal: React.FC<NewIssueModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onRequestClose={onRequestClose} contentLabel="Create New Issue">
-      <h2>Create New Issue</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Title:</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Body:</label>
-          <textarea value={body} onChange={(e) => setBody(e.target.value)} />
-        </div>
-        {mutationLoading && <p>Creating issue...</p>}
-        {mutationError && <p>Error: {mutationError.message}</p>}
-        <button type="submit">Submit</button>
-        <button type="button" onClick={onRequestClose}>
-          Cancel
+    <Modal isOpen={isOpen} onRequestClose={onRequestClose} contentLabel="Create New Issue" className="modal">
+      <div className="modal-header">
+        <h5 className="modal-title">Create New Issue</h5>
+        <button type="button" className="close" onClick={onRequestClose}>
+          <span aria-hidden="true">&times;</span>
         </button>
-      </form>
+      </div>
+      <div className="modal-body">
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="issueTitle">Title:</label>
+            <input
+              id="issueTitle"
+              type="text"
+              className="form-control"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="issueBody">Body:</label>
+            <textarea
+              id="issueBody"
+              className="form-control"
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+            />
+          </div>
+          {mutationLoading && <div className="alert alert-info">Creating issue...</div>}
+          {mutationError && <div className="alert alert-danger">Error: {mutationError.message}</div>}
+          <div className="modal-footer">
+            <button type="submit" className="btn btn-primary">
+              Submit
+            </button>
+            <button type="button" className="btn btn-secondary" onClick={onRequestClose}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </Modal>
   );
 };

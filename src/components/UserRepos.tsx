@@ -59,14 +59,16 @@ interface Repo {
 }
 interface Props {
   repositories: Repo[];
-  username:string;
+  // username:string;
   hasNextPage?: boolean;
   endCursor?: string;
   onLoadMore?: () => void;
 }
 
+
 const UserRepos: React.FC<Props> =  ({ repositories, hasNextPage, endCursor, onLoadMore }) => {
   const { username } = useParams<{ username: string }>();
+  console.log('username is', username);
   const [cursor, setCursor] = useState<string | null>(null);
 
   const { loading, error, data, fetchMore } = useQuery<UserReposData, UserReposVars>(GET_USER_REPOS, {
