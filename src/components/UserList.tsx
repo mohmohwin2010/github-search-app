@@ -25,8 +25,7 @@ const UserList: React.FC<Props> = ({ users, onUserClick }) => {
       <div className="users-section">
         <h2>Users</h2>
         <div className="users-list">
-          {users.map(({ node }) => (
-            
+          {users.map(({ node }) => (            
             <div className="user-card" key={node.login} onClick={() => onUserClick(node.login)} style={{ cursor: 'pointer' }}>
               <img src={node.avatarUrl} alt={node.login} className="user-avatar" />
               <Link to={`/user/${node.login}`} className="user-name">

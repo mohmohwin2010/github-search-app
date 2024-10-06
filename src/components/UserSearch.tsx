@@ -93,7 +93,7 @@ const UserSearch: React.FC = () => {
           {loadingRepos && <p>Loading repositories...</p>}
           {repoError && <p>Error: {repoError.message}</p>}
           {repoData && (
-            <UserRepos repositories={repoData.user.repositories.edges} username={selectedUser} />
+            <UserRepos repositories={repoData.user.repositories.edges} />
           )}
         </div>
       )}

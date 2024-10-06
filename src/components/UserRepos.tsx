@@ -59,7 +59,7 @@ interface Repo {
 }
 interface Props {
   repositories: Repo[];
-  username:string;
+  // username:string;
   hasNextPage?: boolean;
   endCursor?: string;
   onLoadMore?: () => void;
