@@ -4,7 +4,7 @@ import './App.css';
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import UserSearch from './components/UserSearch';
-import UserRepos from './components/UserRepos';
+// import UserRepos from './components/UserRepos';
 import RepoIssues from './components/RepoIssues';
 
 function App() {
