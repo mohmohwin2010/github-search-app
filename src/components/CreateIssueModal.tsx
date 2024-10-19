@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-// import Modal from 'react-modal';
 import Modal from 'react-bootstrap/Modal';
 import 'bootstrap/dist/css/bootstrap.css';
 import { useQuery, useMutation, gql } from '@apollo/client';
@@ -24,7 +23,7 @@ const CREATE_ISSUE = gql`
   }
 `;
 
-interface NewIssueModalProps {
+interface CreateIssueModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
   owner: string;
@@ -32,7 +31,7 @@ interface NewIssueModalProps {
   onIssueCreated: () => void;
 }
 
-const NewIssueModal: React.FC<NewIssueModalProps> = ({
+const CreateIssueModal: React.FC<CreateIssueModalProps> = ({
   isOpen,
   onRequestClose,
   owner,
@@ -50,11 +49,11 @@ const NewIssueModal: React.FC<NewIssueModalProps> = ({
   const [createIssue, { loading: mutationLoading, error: mutationError }] = useMutation(CREATE_ISSUE, {
     onCompleted: () => {
       onIssueCreated();
-      setTitle('');
-      setBody('');
+      clearForm(); // Reset the form fields after issue creation
     },
   });
 
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (data && data.repository.id) {
@@ -68,15 +67,26 @@ const NewIssueModal: React.FC<NewIssueModalProps> = ({
     }
   };
 
+  // Clear form fields
+  const clearForm = () => {
+    setTitle('');
+    setBody('');
+  };
+
+  // Handle modal close and reset form
+  const handleClose = () => {
+    clearForm(); // Clear form data when the modal is closed
+    onRequestClose(); // Trigger the modal close event
+  };
+
   return (
-    <Modal isOpen={isOpen} onRequestClose={onRequestClose} contentLabel="Create New Issue" className="modal">
-      <div className="modal-header">
-        <h5 className="modal-title">Create New Issue</h5>
-        <button type="button" className="close" onClick={onRequestClose}>
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div className="modal-body">
+    <Modal  show={isOpen} onHide={handleClose} backdrop="static" contentLabel="Create New Issue">
+      <Modal.Header closeButton>
+        <Modal.Title>Create New Issue</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {mutationLoading && <div className="alert alert-info">Creating issue...</div>}
+        {mutationError && <div className="alert alert-danger">Error: {mutationError.message}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="issueTitle">Title:</label>
@@ -93,25 +103,22 @@ const NewIssueModal: React.FC<NewIssueModalProps> = ({
             <label htmlFor="issueBody">Body:</label>
             <textarea
               id="issueBody"
+              rows={7}
               className="form-control"
               value={body}
               onChange={(e) => setBody(e.target.value)}
             />
           </div>
-          {mutationLoading && <div className="alert alert-info">Creating issue...</div>}
-          {mutationError && <div className="alert alert-danger">Error: {mutationError.message}</div>}
           <div className="modal-footer">
-            <button type="submit" className="btn btn-primary">
-              Submit
-            </button>
-            <button type="button" className="btn btn-secondary" onClick={onRequestClose}>
+            <button type="button" className="btn btn-secondary" onClick={handleClose}>
               Cancel
             </button>
+            <button type="submit" className="btn btn-success btn-md">Submit</button>
           </div>
         </form>
-      </div>
+      </Modal.Body>
     </Modal>
   );
 };
 
-export default NewIssueModal;
+export default CreateIssueModal;

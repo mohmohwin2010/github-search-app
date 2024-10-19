@@ -4,8 +4,8 @@ import { useQuery, gql } from '@apollo/client';
 import { Button, Form, InputGroup, Badge } from 'react-bootstrap';
 import IssueList from './IssueList';
 import 'bootstrap/dist/css/bootstrap.css';
-import NewIssueModal from './NewIssueModal';
 import UserSearch from './UserSearch';
+import CreateIssueModal from './CreateIssueModal';
 
 const GET_REPO_ISSUES = gql`
   query GetRepoIssues($owner: String!, $repo: String!) {
@@ -40,6 +40,8 @@ const RepoIssues: React.FC = () => {
   });
 
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isModalOpenSimple, setIsModalOpenSimple] = React.useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
 
   if (!username || !reponame) {
     return <p>Invalid repository details.</p>;
@@ -55,10 +57,6 @@ const RepoIssues: React.FC = () => {
     <div className="container mt-4">
       {/* Search Users */}
       <UserSearch />
-      {/* <InputGroup className="mb-3">
-        <Form.Control placeholder="Search Users..." aria-label="Search Users" />
-        <Button variant="outline-secondary">Search</Button>
-      </InputGroup> */}
 
       {/* Repository Info */}
       <div className='justify-content-between mt-5 mb-5 mx-auto col-9 ' style={{ display: 'flex' }}>
@@ -81,26 +79,20 @@ const RepoIssues: React.FC = () => {
         </h4>
 
         {/* New Issue Button */}
-        <Button
-          variant="outline-dark"
-          onClick={() => setIsModalOpen(true)}
-        >
-          New Issue{' '}
-          <Badge bg="warning" text="dark" pill>
-            {openIssueCount + 1}
-          </Badge>
-        </Button>
+
+        <button
+          className="btn btn-success text-white"
+          onClick={() => setIsCreateModalOpen(true)}>New Issue</button>
       </div>
 
       <IssueList issues={repository.issues.edges} />
-
-      <NewIssueModal
-        isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
+      <CreateIssueModal
+        isOpen={isCreateModalOpen}
+        onRequestClose={() => setIsCreateModalOpen(false)}
         owner={username}
         repo={reponame}
         onIssueCreated={() => {
-          setIsModalOpen(false);
+          setIsCreateModalOpen(false);
           refetch();
         }}
       />

@@ -65,10 +65,10 @@ const UserSearch: React.FC = () => {
   const handleUserClick = (login: string) => {
     console.log('User clicked:', login);
     if (selectedUser === login) {
-      console.log('User Selected:', login);
+      // console.log('User Selected:', login);
       setSelectedUser(null);
     } else {
-      console.log('Else User Selected:', login);
+      // console.log('Else User Selected:', login);
       setSelectedUser(login);
       setCurrentPage(1); // Reset current page when a new user is selected
       fetchRepos({ variables: { login } });
