@@ -5,6 +5,7 @@ import { Button, Form, InputGroup, Badge } from 'react-bootstrap';
 import IssueList from './IssueList';
 import 'bootstrap/dist/css/bootstrap.css';
 import NewIssueModal from './NewIssueModal';
+import NewIssueModalSimple from './NewIssueModalSimple';
 import UserSearch from './UserSearch';
 
 const GET_REPO_ISSUES = gql`
@@ -40,6 +41,7 @@ const RepoIssues: React.FC = () => {
   });
 
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+    const [isModalOpen1, setIsModalOpen1] = React.useState(false);
 
   if (!username || !reponame) {
     return <p>Invalid repository details.</p>;
@@ -55,10 +57,6 @@ const RepoIssues: React.FC = () => {
     <div className="container mt-4">
       {/* Search Users */}
       <UserSearch />
-      {/* <InputGroup className="mb-3">
-        <Form.Control placeholder="Search Users..." aria-label="Search Users" />
-        <Button variant="outline-secondary">Search</Button>
-      </InputGroup> */}
 
       {/* Repository Info */}
       <div className='justify-content-between mt-5 mb-5 mx-auto col-9 ' style={{ display: 'flex' }}>
@@ -79,7 +77,7 @@ const RepoIssues: React.FC = () => {
             {openIssueCount}
           </Badge>
         </h4>
-
+        <button onClick={() => setIsModalOpen1(true)}>Create New Issue</button>
         {/* New Issue Button */}
         <Button
           variant="outline-dark"
@@ -101,6 +99,17 @@ const RepoIssues: React.FC = () => {
         repo={reponame}
         onIssueCreated={() => {
           setIsModalOpen(false);
+          refetch();
+        }}
+      />
+
+      <NewIssueModalSimple
+        isOpen={isModalOpen1}
+        onRequestClose={() => setIsModalOpen1(false)}
+        owner={username}
+        repo={reponame}
+        onIssueCreated={() => {
+          setIsModalOpen1(false);
           refetch();
         }}
       />
