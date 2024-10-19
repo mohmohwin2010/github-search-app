@@ -47,14 +47,33 @@ const GET_USER_REPOS = gql`
   }
 `;
 
-const UserRepos: React.FC = () => {
+interface Repo {
+  node: {
+    name: string;
+    url: string;
+    stargazerCount: number;
+    watchers: {
+      totalCount: number;
+    };
+  };
+}
+interface Props {
+  repositories: Repo[];
+  // username:string;
+  hasNextPage?: boolean;
+  endCursor?: string;
+  onLoadMore?: () => void;
+}
+
+
+const UserRepos: React.FC<Props> =  ({ repositories, hasNextPage, endCursor, onLoadMore }) => {
   const { username } = useParams<{ username: string }>();
+  console.log('username is', username);
   const [cursor, setCursor] = useState<string | null>(null);
 
-  // Ensure useQuery is always called, even if `username` doesn't exist
   const { loading, error, data, fetchMore } = useQuery<UserReposData, UserReposVars>(GET_USER_REPOS, {
-    variables: { username: username || '', after: cursor }, // Pass a default empty string for username
-    skip: !username, // Skip the query if username is undefined
+    variables: { username: username || '', after: cursor },
+    skip: !username, 
     notifyOnNetworkStatusChange: true,
   });
 
@@ -80,8 +99,8 @@ const UserRepos: React.FC = () => {
       });
     }
   };
-
-  if (!username) return <p>No username provided.</p>; // Handle case when username is not provided
+  console.log('username is', username)
+  if (!username) return <p>No username provided.</p>;
 
   if (loading && !data) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;

@@ -1,14 +1,21 @@
-// src/components/RepoIssues.tsx
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, gql } from '@apollo/client';
+import { Button, Form, InputGroup, Badge } from 'react-bootstrap';
 import IssueList from './IssueList';
-import NewIssueModal from './NewIssueModal';
+import 'bootstrap/dist/css/bootstrap.css';
+import UserSearch from './UserSearch';
+import CreateIssueModal from './CreateIssueModal';
 
 const GET_REPO_ISSUES = gql`
   query GetRepoIssues($owner: String!, $repo: String!) {
     repository(owner: $owner, name: $repo) {
+      stargazerCount
+      watchers {
+        totalCount
+      }
       issues(states: OPEN, first: 20) {
+        totalCount
         edges {
           node {
             title
@@ -33,26 +40,59 @@ const RepoIssues: React.FC = () => {
   });
 
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isModalOpenSimple, setIsModalOpenSimple] = React.useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
 
   if (!username || !reponame) {
     return <p>Invalid repository details.</p>;
   }
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p className='text-center mt-5 h4'>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
+  const repository = data.repository;
+  const openIssueCount = repository.issues.totalCount;
+
   return (
-    <div>
-      <h2>Open Issues for {reponame}</h2>
-      <button onClick={() => setIsModalOpen(true)}>Create New Issue</button>
-      <IssueList issues={data.repository.issues.edges} />
-      <NewIssueModal
-        isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
+    <div className="container mt-4">
+      {/* Search Users */}
+      <UserSearch />
+
+      {/* Repository Info */}
+      <div className='justify-content-between mt-5 mb-5 mx-auto col-9 ' style={{ display: 'flex' }}>
+        <p className="mb-3 h2" style={{ fontFamily: 'Comic Sans MS, cursive', float: 'left' }}>
+          {reponame}
+        </p>
+        <p className='pt-4' style={{ float: 'right' }}>
+          <strong>{repository.stargazerCount} stars</strong> /{' '}
+          <strong>{repository.watchers.totalCount} watching</strong>
+        </p>
+      </div>
+
+      <div className="d-flex justify-content-between align-items-center mx-auto col-9">
+        {/* Open Issues */}
+        <h4>
+          Open Issues{' '}
+          <Badge bg="warning" text="dark" pill className="ms-2">
+            {openIssueCount}
+          </Badge>
+        </h4>
+
+        {/* New Issue Button */}
+
+        <button
+          className="btn btn-success text-white"
+          onClick={() => setIsCreateModalOpen(true)}>New Issue</button>
+      </div>
+
+      <IssueList issues={repository.issues.edges} />
+      <CreateIssueModal
+        isOpen={isCreateModalOpen}
+        onRequestClose={() => setIsCreateModalOpen(false)}
         owner={username}
         repo={reponame}
         onIssueCreated={() => {
-          setIsModalOpen(false);
+          setIsCreateModalOpen(false);
           refetch();
         }}
       />
